@@ -1,0 +1,26 @@
+<!-- res/layout/dialog_pazienti_per_data.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/pazientiTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lista pazienti" />
+
+    <Button
+        android:id="@+id/aggiungiButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aggiungi" />
+
+    <Button
+        android:id="@+id/chiudiButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chiudi" />
+
+</LinearLayout>

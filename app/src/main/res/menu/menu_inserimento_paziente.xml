@@ -1,0 +1,7 @@
+<!-- res/menu/menu_inserimento_paziente.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_aggiungi_paziente"
+        android:title="Aggiungi Paziente" />
+    <!-- Aggiungi altri elementi del menu se necessario -->
+</menu>
