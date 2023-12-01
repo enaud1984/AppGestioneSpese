@@ -17,6 +17,7 @@ import android.widget.Button
 import android.widget.CalendarView
 import android.widget.CheckBox
 import android.widget.CheckedTextView
+import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -61,6 +62,20 @@ class HomeFragment : Fragment() {
         val root: View = binding.root
 
         val calendar:CalendarView =binding.calendarView
+
+        //alla partenza punta alla data corrente
+        val selectedDateInMillis = calendar.date
+        val selectedCalendar = Calendar.getInstance()
+        selectedCalendar.timeInMillis = selectedDateInMillis
+
+        // Ottieni il mese dalla data selezionata
+        val year= selectedCalendar.get(Calendar.YEAR)+1
+        val month = selectedCalendar.get(Calendar.MONTH)+1
+        val day=selectedCalendar.get(Calendar.DAY_OF_MONTH)
+
+        val formattedDate = formatDate(day, month, year)
+        mostraPazientiPerData(formattedDate)
+
         calendar.setOnDateChangeListener { _, year, month, dayOfMonth ->
             // Quando si clicca su una data nel CalendarView
             handleDateClick(dayOfMonth, month, year)
@@ -69,14 +84,14 @@ class HomeFragment : Fragment() {
         return root
     }
 
+
     private fun handleDateClick(dayOfMonth: Int, month: Int, year: Int) {
         val formattedDate = formatDate(dayOfMonth, month, year)
         // Implementa l'azione di tocco
         mostraPazientiPerData(formattedDate)
-
     }
 
-    private fun mostraModuloInserimentoPaziente(dataCorrente: String) {
+    private fun mostraModuloInserimentoPaziente(dataCorrente: String,paziente: PazientiDbHelper.Paziente? = null) {
         val builder = AlertDialog.Builder(requireContext())
         val inflater = layoutInflater
         val dialogView = inflater.inflate(R.layout.item_paziente, null)
@@ -87,26 +102,65 @@ class HomeFragment : Fragment() {
         val isBlackCheckBox = dialogView.findViewById<CheckBox>(R.id.blackCheckBox)
         dialogView.findViewById<EditText>(R.id.dataEditText).setText(dataCorrente)
 
-        builder.setView(dialogView)
-            .setTitle("Inserisci Paziente")
-            .setPositiveButton("Salva") { _, _ ->
-                val nome = nomeEditText.text.toString()
-                val cognome = cognomeEditText.text.toString()
-                val entrata = entrataEditText.text.toString().toDoubleOrNull() ?: 0.0
-                val isBlack = isBlackCheckBox.isChecked
+        if (paziente !=null){
+            nomeEditText.setText(paziente.nome)
+            cognomeEditText.setText(paziente.cognome)
+            entrataEditText.setText(paziente.entrata.toString())
+            isBlackCheckBox.setChecked(paziente.isBlack)
+            builder.setView(dialogView)
+                .setTitle("Modifica")
+                .setPositiveButton("Aggiorna") { _, _ ->
+                    val nome = nomeEditText.text.toString()
+                    val cognome = cognomeEditText.text.toString()
+                    val entrata = entrataEditText.text.toString().toDoubleOrNull() ?: 0.0
+                    val isBlack = isBlackCheckBox.isChecked
 
-                // Crea un oggetto Paziente con i dati inseriti
-                val paziente = PazientiDbHelper.Paziente(0, nome, cognome, entrata, isBlack, SimpleDateFormat("dd-MM-yyyy").parse(dataCorrente))
+                    // Crea un oggetto Paziente con i dati inseriti
+                    val paziente = PazientiDbHelper.Paziente(
+                        paziente.id,
+                        nome,
+                        cognome,
+                        entrata,
+                        isBlack,
+                        SimpleDateFormat("dd-MM-yyyy").parse(dataCorrente)
+                    )
 
-                // Chiamata alla funzione per inserire il paziente nel database
-                inserisciPaziente(paziente,dataCorrente)
-            }
-            .setNegativeButton("Annulla", null)
-            .show()
+                    // Chiamata alla funzione per inserire il paziente nel database
+                    modificaPaziente(paziente, dataCorrente)
+                }
+                .setNegativeButton("Annulla", null)
+                .show()
+        }
+        else {
+            builder.setView(dialogView)
+                .setTitle("Inserisci")
+                .setPositiveButton("Salva") { _, _ ->
+                    val nome = nomeEditText.text.toString()
+                    val cognome = cognomeEditText.text.toString()
+                    val entrata = entrataEditText.text.toString().toDoubleOrNull() ?: 0.0
+                    val isBlack = isBlackCheckBox.isChecked
+
+                    // Crea un oggetto Paziente con i dati inseriti
+                    val paziente = PazientiDbHelper.Paziente(
+                        0,
+                        nome,
+                        cognome,
+                        entrata,
+                        isBlack,
+                        SimpleDateFormat("dd-MM-yyyy").parse(dataCorrente)
+                    )
+
+                    // Chiamata alla funzione per inserire il paziente nel database
+                    inserisciPaziente(paziente, dataCorrente)
+                }
+                .setNegativeButton("Annulla", null)
+                .show()
+        }
     }
 
     private fun mostraPazientiPerData(data: String) {
         // Ottieni tutti i pazienti per la data specificata dal database
+
         val pazientiList = dbHelper.getPazientiForDate(data)
 
         binding.dataTitle.text="Entrate del $data"
@@ -114,7 +168,12 @@ class HomeFragment : Fragment() {
         binding.dataTitle.setTypeface(null, Typeface.BOLD)
         binding.dataTitle.setTextColor(Color.BLACK)
 
+        binding.addExpenseButton.setOnClickListener{
+            mostraModuloInserimentoPaziente(data)
+        }
+
         val cardContainer = binding.cardContainer
+        cardContainer.removeAllViews()
         for (paziente in pazientiList) {
             val cardView = createCardView(paziente)
             cardContainer.addView(cardView)
@@ -127,6 +186,7 @@ class HomeFragment : Fragment() {
         )
         cardContainer.addView(space)
         */
+        //se clicco appare menu
         if (false) {
 
             // Crea una Dialog
@@ -163,7 +223,7 @@ class HomeFragment : Fragment() {
 
     private fun createCardView(paziente:PazientiDbHelper.Paziente): View? {
         val cardView = CardView(requireContext())
-
+        val data=SimpleDateFormat("dd-MM-yyyy").format(paziente.data)
         val layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
@@ -209,14 +269,11 @@ class HomeFragment : Fragment() {
         editButton.layoutParams = editButtonLayoutParams
         editButton.setImageResource(R.drawable.ic_edit)
         editButton.setBackgroundResource(android.R.color.transparent)
-        /*
+
         editButton.setOnClickListener {
             Toast.makeText(requireContext(), "Modifica: ${paziente.nome}", Toast.LENGTH_SHORT).show()
+            mostraModuloInserimentoPaziente(data,paziente)
         }
-        editButton.setOnClickListener {
-            showAddExpenseDialog(spesaFissa)
-        }
-        */
 
         //gestione delete
         val deleteButton = ImageButton(requireContext())
@@ -229,21 +286,20 @@ class HomeFragment : Fragment() {
         deleteButton.layoutParams = deleteButtonLayoutParams
         deleteButton.setImageResource(R.drawable.ic_delete)
         deleteButton.setBackgroundResource(android.R.color.transparent)
+
         deleteButton.setOnClickListener {
             Toast.makeText(requireContext(), "Cancella: ${paziente.nome}", Toast.LENGTH_SHORT).show()
-        }
-
-        /*
-        deleteButton.setOnClickListener {
             val alertDialogBuilder = AlertDialog.Builder(requireContext())
             alertDialogBuilder.setTitle("Conferma eliminazione")
             alertDialogBuilder.setMessage("Vuoi eliminare la spesa fissa?")
             alertDialogBuilder.setPositiveButton("Si") { _, _ ->
                 // Elimina l'elemento dal database
-                dbHelper.deletePaziente(paziente)
+                eliminaPaziente(paziente,data)
+
                 // Aggiorna la lista del CardContainer
-                speseFisseList.remove(spesaFissa)
-                updateUIWithSpeseFisse(speseFisseList)
+                //speseFisseList.remove(spesaFissa)
+                //updateUIWithSpeseFisse(speseFisseList)
+
             }
             alertDialogBuilder.setNegativeButton("No") { dialog, _ ->
                 dialog.dismiss()
@@ -252,7 +308,7 @@ class HomeFragment : Fragment() {
             val alertDialog = alertDialogBuilder.create()
             alertDialog.show()
         }
-        */
+
 
         val relativeLayout = RelativeLayout(requireContext())
         relativeLayout.addView(textViewNome)
@@ -283,7 +339,6 @@ class HomeFragment : Fragment() {
         return cardView
     }
 
-
     private fun inserisciPaziente(paziente: PazientiDbHelper.Paziente,dataCorrente:String) {
         dbHelper.insertPaziente(paziente)
         // Aggiorna la visualizzazione dei pazienti dopo l'inserimento
@@ -292,7 +347,6 @@ class HomeFragment : Fragment() {
 
     private fun modificaPaziente(paziente: PazientiDbHelper.Paziente,dataCorrente:String) {
         dbHelper.updatePaziente(paziente)
-
         // Aggiorna la visualizzazione dei pazienti dopo la modifica
         mostraPazientiPerData(dataCorrente)
     }
@@ -306,20 +360,6 @@ class HomeFragment : Fragment() {
     private fun formatDate(dayOfMonth: Int, month: Int, year: Int): String {
         val monthString = (month + 1).toString().padStart(2, '0') // Aggiunge uno zero iniziale se necessario
         val dayString = dayOfMonth.toString().padStart(2, '0') // Aggiunge uno zero iniziale se necessario
-        return "$dayString-$monthString-$year"
-    }
-
-    private fun formatDate(timeInMillis: Long): String {
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = timeInMillis
-
-        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
-        val month = calendar.get(Calendar.MONTH) + 1
-        val year = calendar.get(Calendar.YEAR)
-
-        val monthString = month.toString().padStart(2, '0')
-        val dayString = dayOfMonth.toString().padStart(2, '0')
-
         return "$dayString-$monthString-$year"
     }
 

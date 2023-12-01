@@ -74,7 +74,24 @@ class PazientiDbHelper(context: Context) : SQLiteOpenHelper(context, Spese.DATAB
         //db.close()
         return pazientiList
     }
+    @SuppressLint("Range")
+    fun getAllPazientiDates():List<Date>{
+        val pazientiDates = mutableListOf<Date>()
+        val db = this.readableDatabase
+        val query = "SELECT distinct ${Spese.PazienteEntry.COLONNA_DATA} FROM ${Spese.PazienteEntry.TABELLA_NOME}"
+        val cursor: Cursor = db.rawQuery(query,null)
+        if (cursor.moveToFirst()) {
+            do {
+                val date=cursor.getLong(cursor.getColumnIndex(Spese.PazienteEntry.COLONNA_DATA))
+                val dateT = Date(date)
+                pazientiDates.add(dateT)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
 
+        return pazientiDates
+    }
     fun deletePaziente(paziente:Paziente) {
         val id=paziente.id
         val db = writableDatabase

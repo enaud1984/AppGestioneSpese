@@ -6,17 +6,98 @@
     android:layout_height="match_parent"
     tools:context=".ui.progressivi.ProgressiviFragment">
 
-    <TextView
-        android:id="@+id/text_notifications"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent"
+        tools:context=".ui.progressivi.ProgressiviFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="80dp"
+            android:orientation="vertical"
+            android:textAlignment="center"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:id="@+id/linearSettimana"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="20dp">
+
+                <TextView
+                    android:id="@+id/labelUltimaSettimana"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Parziale ultima settimana"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="14pt" />
+
+                <TextView
+                    android:id="@+id/testoUltimaSettimana"
+                    android:layout_width="match_parent"
+                    android:layout_height="33dp"
+                    android:layout_below="@id/labelUltimaSettimana"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearMese"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="20dp">
+
+                <TextView
+                    android:id="@+id/labelUltimoMese"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Parziale ultimo mese"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="14pt" />
+
+                <TextView
+                    android:id="@+id/testoUltimoMese"
+                    android:layout_width="match_parent"
+                    android:layout_height="31dp"
+                    android:layout_below="@id/labelUltimoMese"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearAnno"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="20dp">
+
+                <TextView
+                    android:id="@+id/labelUltimoAnno"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Parziale ultimo anno"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="14pt" />
+
+                <TextView
+                    android:id="@+id/testoUltimoAnno"
+                    android:layout_width="match_parent"
+                    android:layout_height="37dp"
+                    android:layout_below="@id/labelUltimoAnno"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -55,15 +55,40 @@
         </LinearLayout>
     </ScrollView>
 
-    <TextView
-        android:id="@+id/dataTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
-        android:layout_marginEnd="1dp"
+    <LinearLayout
+        android:id="@+id/linear_layout_middle"
+        android:layout_width="380dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="3dp"
         android:layout_marginBottom="1dp"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/cardScrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider" />
+        app:layout_constraintTop_toBottomOf="@+id/divider">
+
+        <TextView
+            android:id="@+id/dataTitle"
+            android:layout_width="299dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="1dp"
+            android:textAlignment="center" />
+
+        <ImageButton
+            android:id="@+id/addExpenseButton"
+            android:layout_width="75dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_input_add"
+            app:layout_constraintBottom_toTopOf="@+id/cardContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="NotSibling" />
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
