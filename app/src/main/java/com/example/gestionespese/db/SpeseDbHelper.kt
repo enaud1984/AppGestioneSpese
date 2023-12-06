@@ -1,105 +1,112 @@
 package com.example.gestionespese.db
 // SpeseDbHelper.kt
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import com.example.gestionespese.db.Contabilita.DATABASE_NOME
+import com.example.gestionespese.db.Contabilita.DATABASE_VERSIONE
+import java.text.SimpleDateFormat
+import java.util.Date
+import com.example.gestionespese.db.Contabilita.SpeseEntry
 
-
-class SpeseDbHelper(context: Context) :SQLiteOpenHelper(context, Spese.DATABASE_NOME, null, Spese.DATABASE_VERSIONE) {
+class SpeseDbHelper(context: Context) :SQLiteOpenHelper(context, DATABASE_NOME, null, DATABASE_VERSIONE) {
 
     init {
-        Log.d("SpeseDbHelper", "CREO DATABASE")
-        Log.d("DB",context.getDatabasePath("spese.db").path)
+        Log.d("SpeseDbHelper", "Costruttore chiamato SpeseDbHelper")
+        Log.d("DB", context.getDatabasePath(DATABASE_NOME).path)
     }
-
     override fun onCreate(db: SQLiteDatabase) {
+        Log.i("SpeseDbHelper","CREO TABELLA SPESE")
         // Creazione della tabella
         val SQL_CREARE_TABELLA =
-            "CREATE TABLE ${Spese.SpesaEntry.TABELLA_NOME} (" +
-                    "${Spese.SpesaEntry.COLONNA_ID} INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "${Spese.SpesaEntry.COLONNA_NOME} TEXT NOT NULL, " +
-                    "${Spese.SpesaEntry.COLONNA_COSTO} REAL NOT NULL, " +
-                    "${Spese.SpesaEntry.COLONNA_FREQUENZA} TEXT NOT NULL)"
-        db?.execSQL(SQL_CREARE_TABELLA)
+            "CREATE TABLE ${SpeseEntry.TABELLA_NOME} (" +
+                    "${SpeseEntry.COLONNA_ID} INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "${SpeseEntry.COLONNA_NOME_SPESA} TEXT NOT NULL, " +
+                    "${SpeseEntry.COLONNA_USCITA} REAL NOT NULL, " +
+                    "${SpeseEntry.COLONNA_DATA} DATE)"
+        db.execSQL(SQL_CREARE_TABELLA)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS ${Spese.SpesaEntry.TABELLA_NOME}")
+        db.execSQL("DROP TABLE IF EXISTS ${SpeseEntry.TABELLA_NOME}")
         onCreate(db)
     }
 
-    fun insertSpesa(spesaFissa: SpesaFissa) {
-        val spesa= spesaFissa.nome
-        val costo=spesaFissa.costo
-        val frequenza=spesaFissa.frequenza
+    fun insertSpesa(spesa: Spesa) {
+        val nome_spesa= spesa.nome_spesa
+        val uscita=spesa.uscita
+        val data= SimpleDateFormat("dd-MM-yyyy").format(spesa.data)
 
         val db = writableDatabase
         val values = ContentValues().apply {
-            put(Spese.SpesaEntry.COLONNA_NOME, spesa)
-            put(Spese.SpesaEntry.COLONNA_COSTO, costo)
-            put(Spese.SpesaEntry.COLONNA_FREQUENZA, frequenza)
+            put(SpeseEntry.COLONNA_NOME_SPESA, nome_spesa)
+            put(SpeseEntry.COLONNA_USCITA, uscita)
+            put(SpeseEntry.COLONNA_DATA, data)
         }
-        val newRowId = db.insert(Spese.SpesaEntry.TABELLA_NOME, null, values)
+        val newRowId = db.insert(SpeseEntry.TABELLA_NOME, null, values)
         Log.d("SpeseDbHelper", "Record inserito con ID: $newRowId")
         //db.close()
     }
-    fun getAllSpeseFisse(): List<SpesaFissa> {
-        val speseFisseList = mutableListOf<SpesaFissa>()
-        val db = readableDatabase
-        val cursor = db.query(
-            Spese.SpesaEntry.TABELLA_NOME,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        )
 
-        with(cursor) {
-            while (moveToNext()) {
-                val nome = getString(getColumnIndexOrThrow(Spese.SpesaEntry.COLONNA_NOME))
-                val costo = getDouble(getColumnIndexOrThrow(Spese.SpesaEntry.COLONNA_COSTO))
-                val frequenza = getString(getColumnIndexOrThrow(Spese.SpesaEntry.COLONNA_FREQUENZA))
-                val id = getString(getColumnIndexOrThrow(Spese.SpesaEntry.COLONNA_ID)).toLong()
-                speseFisseList.add(SpesaFissa(id,nome, costo, frequenza))
-            }
+    fun deleteSpesa(spesa:Spesa) {
+        val id=spesa.id
+        val db = writableDatabase
+        db.delete(
+            SpeseEntry.TABELLA_NOME,
+            "${SpeseEntry.COLONNA_ID} = ?",
+            arrayOf(id.toString())
+        )
+        //db.close()
+    }
+
+    // Aggiungi una funzione per modificare i dati di una spesa nel database
+    fun updateSpesa(spesa:Spesa) {
+        val id=spesa.id
+        val nome_spesa=spesa.nome_spesa
+        val uscita=spesa.uscita
+        val data=SimpleDateFormat("dd-MM-yyyy").format(spesa.data)
+        val db = writableDatabase
+        val contentValues = ContentValues().apply {
+            put(SpeseEntry.COLONNA_NOME_SPESA, nome_spesa)
+            put(SpeseEntry.COLONNA_USCITA, uscita)
+            put(SpeseEntry.COLONNA_DATA, data)
         }
 
+        db.update(
+            SpeseEntry.TABELLA_NOME,
+            contentValues,
+            "${SpeseEntry.COLONNA_ID} = ?",
+            arrayOf(id.toString())
+        )
+        //db.close()
+    }
+
+    @SuppressLint("Range")
+    fun getSpeseForDate(date: String): List<Spesa> {
+        val speseList = mutableListOf<Spesa>()
+        val db = this.readableDatabase
+        val query = "SELECT * FROM ${SpeseEntry.TABELLA_NOME} WHERE ${SpeseEntry.COLONNA_DATA} = ?"
+        val cursor: Cursor = db.rawQuery(query,
+            arrayOf(date)
+        )
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getLong(cursor.getColumnIndex(SpeseEntry.COLONNA_ID))
+                val nome_spesa = cursor.getString(cursor.getColumnIndex(SpeseEntry.COLONNA_NOME_SPESA))
+                val uscita = cursor.getDouble(cursor.getColumnIndex(SpeseEntry.COLONNA_USCITA))
+                speseList.add(Spesa(id, nome_spesa, uscita, SimpleDateFormat("dd-MM-yyyy").parse(date)))
+            } while (cursor.moveToNext())
+        }
         cursor.close()
         //db.close()
-        return speseFisseList
+        return speseList
     }
 
-    fun deleteSpesaFissa(spesaFissa: SpesaFissa) {
-        writableDatabase.use { db ->
-            val selection = "${Spese.SpesaEntry.COLONNA_ID} = ?"
-            val selectionArgs = arrayOf(spesaFissa.id.toString())
-            db.delete(Spese.SpesaEntry.TABELLA_NOME, selection, selectionArgs)
-        }
-        Log.d("SpeseDbHelper", "Record cancellato con ID: ${spesaFissa.id}")
-
-    }
-
-    // Metodo per aggiornare una spesa fissa nel database
-    fun updateSpesaFissa(spesaFissa: SpesaFissa) {
-        writableDatabase.use { db ->
-            val values = ContentValues().apply {
-                put(Spese.SpesaEntry.COLONNA_NOME, spesaFissa.nome)
-                put(Spese.SpesaEntry.COLONNA_COSTO, spesaFissa.costo)
-                put(Spese.SpesaEntry.COLONNA_FREQUENZA, spesaFissa.frequenza)
-                // Aggiungi altri campi da aggiornare se necessario
-            }
-
-            val selection = "${Spese.SpesaEntry.COLONNA_ID} = ?"
-            val selectionArgs = arrayOf(spesaFissa.id.toString())
-
-            db.update(Spese.SpesaEntry.TABELLA_NOME, values, selection, selectionArgs)
-        }
-    }
-    data class SpesaFissa(var id: Long, var nome: String, var costo: Double, var frequenza: String)
+    data class Spesa(var id: Long, var nome_spesa: String, var uscita: Double,var data: Date)
 
 }

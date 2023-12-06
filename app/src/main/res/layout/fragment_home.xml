@@ -8,7 +8,7 @@
     tools:context=".ui.home.HomeFragment">
 
     <!-- Linea divisoria tra CalendarView e ScrollView -->
-    <CalendarView
+    <!--CalendarView
         android:id="@+id/calendarView"
         android:layout_width="377dp"
         android:layout_height="338dp"
@@ -18,7 +18,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.464"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" /-->
+
+    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/calendarView"
+        android:layout_width="377dp"
+        android:layout_height="338dp"
+        android:layout_marginStart="31dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="31dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.464"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:mcv_showOtherDates="all"
+        app:mcv_selectionColor="#00F"
+        />
 
     <View
         android:id="@+id/divider"

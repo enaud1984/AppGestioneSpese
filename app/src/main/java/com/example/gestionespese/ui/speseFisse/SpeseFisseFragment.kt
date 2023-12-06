@@ -18,9 +18,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import com.example.gestioneContabilita.db.SpeseFisseDbHelper
 import com.example.gestionespese.R
 import com.example.gestionespese.databinding.FragmentSpesefisseBinding
-import com.example.gestionespese.db.SpeseDbHelper
+
 
 class SpeseFisseFragment : Fragment() {
 
@@ -29,8 +30,8 @@ class SpeseFisseFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    var speseFisseList = mutableListOf<SpeseDbHelper.SpesaFissa>();
-    private val dbHelper by lazy { SpeseDbHelper(requireContext()) }
+    var speseFisseList = mutableListOf<SpeseFisseDbHelper.SpesaFissa>();
+    private val dbHelper by lazy { SpeseFisseDbHelper(requireContext()) }
 
 
     override fun onCreateView(
@@ -65,7 +66,7 @@ class SpeseFisseFragment : Fragment() {
         return root
     }
 
-    private fun createCardView(spesaFissa: SpeseDbHelper.SpesaFissa): View? {
+    private fun createCardView(spesaFissa: SpeseFisseDbHelper.SpesaFissa): View? {
         val cardView = CardView(requireContext())
         //cardView.setTag(1,spesaFissa.id)
         val layoutParams = LinearLayout.LayoutParams(
@@ -182,7 +183,7 @@ class SpeseFisseFragment : Fragment() {
         return cardView
     }
 
-    private fun showAddExpenseDialog(spesaFissa: SpeseDbHelper.SpesaFissa? = null) {
+    private fun showAddExpenseDialog(spesaFissa: SpeseFisseDbHelper.SpesaFissa? = null) {
         val inputLayout = LinearLayout(requireContext())
         inputLayout.orientation = LinearLayout.VERTICAL
 
@@ -244,7 +245,7 @@ class SpeseFisseFragment : Fragment() {
                     dbHelper.updateSpesaFissa(spesaFissa)
                 }
                 else{
-                    val newSpesaFissa = SpeseDbHelper.SpesaFissa(0, spesa, costo, frequenza)
+                    val newSpesaFissa = SpeseFisseDbHelper.SpesaFissa(0, spesa, costo, frequenza)
                     speseFisseList.add(newSpesaFissa)
 
                     dbHelper.insertSpesa(newSpesaFissa)
@@ -262,7 +263,7 @@ class SpeseFisseFragment : Fragment() {
 
         builder.show()
     }
-    private fun updateUIWithSpeseFisse(speseFisseList: MutableList<SpeseDbHelper.SpesaFissa>) {
+    private fun updateUIWithSpeseFisse(speseFisseList: MutableList<SpeseFisseDbHelper.SpesaFissa>) {
         val cardContainer=binding.cardContainer
         binding.cardContainer.removeAllViews()
         for (spesaFissa in speseFisseList) {
@@ -279,6 +280,7 @@ class SpeseFisseFragment : Fragment() {
     }
     override fun onDestroyView() {
         super.onDestroyView()
+        dbHelper.close()
         _binding = null
     }
 }

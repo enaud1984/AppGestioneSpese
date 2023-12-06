@@ -13,7 +13,7 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
-
+        resourceConfigurations += listOf("it","en")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -53,4 +53,6 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("androidx.cardview:cardview:1.0.0")
+    implementation("com.github.prolificinteractive:material-calendarview:2.0.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

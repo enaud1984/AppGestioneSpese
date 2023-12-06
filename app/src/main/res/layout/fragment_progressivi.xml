@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         tools:context=".ui.progressivi.ProgressiviFragment">
 
-        <LinearLayout
+        <!--LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="80dp"
@@ -39,10 +39,13 @@
                 <TextView
                     android:id="@+id/testoUltimaSettimana"
                     android:layout_width="match_parent"
-                    android:layout_height="33dp"
+                    android:layout_height="wrap_content"
                     android:layout_below="@id/labelUltimaSettimana"
                     android:layout_marginTop="8dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="13pt"/>
             </LinearLayout>
 
             <LinearLayout
@@ -65,10 +68,13 @@
                 <TextView
                     android:id="@+id/testoUltimoMese"
                     android:layout_width="match_parent"
-                    android:layout_height="31dp"
+                    android:layout_height="wrap_content"
                     android:layout_below="@id/labelUltimoMese"
                     android:layout_marginTop="8dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="13pt"/>
             </LinearLayout>
 
             <LinearLayout
@@ -91,13 +97,128 @@
                 <TextView
                     android:id="@+id/testoUltimoAnno"
                     android:layout_width="match_parent"
-                    android:layout_height="37dp"
+                    android:layout_height="wrap_content"
                     android:layout_below="@id/labelUltimoAnno"
                     android:layout_marginTop="8dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="13pt"/>
             </LinearLayout>
 
+        </LinearLayout-->
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="80dp"
+            android:orientation="vertical"
+            android:textAlignment="center"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Layout for Last Week -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardSettimana"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/labelUltimaSettimana"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Parziale ultima settimana"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/testoUltimaSettimana"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Layout for Last Month -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardMese"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/labelUltimoMese"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Parziale ultimo mese"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/testoUltimoMese"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Layout for Last Year -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAnno"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/labelUltimoAnno"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Parziale ultimo anno"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/testoUltimoAnno"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
