@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.grafici.GraficiFragment">
@@ -12,33 +13,44 @@
         android:padding="16dp"
         >
 
-    <EditText
-        android:id="@+id/editTextStartDate"
+        <EditText
+        android:id="@+id/editTextRangeDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Seleziona data di inizio"
-        android:focusable="false"
-        />
-
-        <EditText
-            android:id="@+id/editTextEndDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:hint="Seleziona data di fine" />
+        android:hint="Seleziona intervallo"
+        android:focusable="false" />
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="20dp"
             android:visibility="visible" />
 
         <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/barChart"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true" />
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:visibility="visible" />
+
+        <Spinner
+            android:id="@+id/spinnerTipoDati"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/barChart" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

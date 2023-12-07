@@ -1,13 +1,16 @@
 package com.example.gestionespese.ui.grafici
 
 import PazientiDbHelper
-import android.app.DatePickerDialog
+import android.annotation.SuppressLint
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.gestionespese.R
 import com.example.gestionespese.databinding.FragmentGraficiBinding
@@ -19,6 +22,7 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -32,8 +36,8 @@ class GraficiFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var editTextStartDate: EditText
-    private lateinit var editTextEndDate: EditText
+    private lateinit var editTextRangeDate: EditText
+
     private lateinit var dbHelperPazienti: PazientiDbHelper
     private lateinit var dbHelperSpese: SpeseDbHelper
 
@@ -48,70 +52,41 @@ class GraficiFragment : Fragment() {
         dbHelperSpese= SpeseDbHelper(requireContext())
         _binding = FragmentGraficiBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        editTextStartDate = root.findViewById(R.id.editTextStartDate)
-        editTextEndDate = root.findViewById(R.id.editTextEndDate)
-        editTextStartDate.setOnClickListener {
-            showDatePickerDialog(editTextStartDate)
-        }
+        creaSpinner()
+        editTextRangeDate = root.findViewById(R.id.editTextRangeDate)
+        editTextRangeDate.setTextAlignment(View.TEXT_ALIGNMENT_CENTER)
+        editTextRangeDate.typeface=Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
 
-        editTextEndDate.setOnClickListener {
-            onEndDateClick()
+        editTextRangeDate.setOnClickListener {
+            showDatePickerDialog()
         }
 
         binding.barChart.setNoDataText("")
         return root
     }
 
-    private fun onEndDateClick() {
-        // Mostra il DatePickerDialog solo se la data di inizio è stata impostata
-        val startDateText = editTextStartDate.text.toString()
-        if (startDateText.isNotEmpty()) {
-            showDatePickerDialog(editTextEndDate)
-        } else {
-            // Messaggio di avviso o altra gestione nel caso in cui la data di inizio non sia stata impostata
-            Toast.makeText(requireContext(),
-                "Imposta prima la data di inizio", Toast.LENGTH_SHORT).show()
-        }
-    }
+    private fun showDatePickerDialog() {
+        val builder = MaterialDatePicker.Builder.dateRangePicker()
+        val picker = builder.build()
+        picker.addOnPositiveButtonClickListener { selection ->
+            val startDateL = selection.first
+            val endDateL = selection.second
+            val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
 
-    private fun showDatePickerDialog(editText: EditText) {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-        val datePickerDialog = DatePickerDialog(
-            requireContext(),
-            { _, selectedYear, selectedMonth, selectedDay ->
-                // Verifica che la data di fine sia maggiore o uguale a quella di inizio
-                if (editText.id==binding.editTextEndDate.id){
-                    startDate = parseDate(editTextStartDate.text.toString())
-                    endDate = parseDate("$selectedDay-${selectedMonth + 1}-$selectedYear")
-
-                    if (endDate >= startDate) {
-                        // Data di fine valida, aggiorna il testo dell'EditText
-                        val formattedDate = "$selectedDay-${selectedMonth + 1}-$selectedYear"
-                        editText.setText(formattedDate)
-                        getEntrate()
-                    } else {
-                        // Messaggio di avviso o altra gestione nel caso in cui la data di fine sia precedente a quella di inizio
-                        Toast.makeText(
-                            requireContext(),
-                            "La data di fine deve essere maggiore " +
-                                    "o uguale a quella di inizio",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+            // Fai qualcosa con le date selezionate
+            startDate = Date(startDateL)
+            endDate = Date(endDateL)
+            editTextRangeDate.setText("${formatter.format(startDate)} - ${formatter.format(endDate)}")
+            when
+                (binding.spinnerTipoDati.selectedItemPosition){
+                    0->getEntrate()
+                    1->getSpese()
                 }
-                else if(editText.id==binding.editTextStartDate.id){
-                    val formattedDate = "$selectedDay-${selectedMonth + 1}-$selectedYear"
-                    editText.setText(formattedDate)
-                }},
-                year,
-                month,
-                day
-        )
-        datePickerDialog.show()
+
+        }
+        picker.show(childFragmentManager, picker.toString())
+
+
     }
 
     private fun calculateDates():List<String>{
@@ -140,19 +115,62 @@ class GraficiFragment : Fragment() {
         if(entrateMap.isEmpty())
             return
         else
-            drawPlot(entrateMap,listDateStrings)
+            drawPlot(entrateMap,listDateStrings,"entrate")
     }
-
     private fun getSpese() {
         val formatter = SimpleDateFormat("dd-MM-yyyy")
         val start=formatter.format(startDate)
         val end=formatter.format(endDate)
-
+        val listDateStrings=calculateDates()
         val speseMap=dbHelperSpese.getSpeseForDateGroupByDay(start,end)
-        //drawPlot(speseMap,listDateStrings)
+        if(speseMap.isEmpty())
+            return
+        else
+            drawPlot(speseMap,listDateStrings,"uscite")
     }
 
-    private fun drawPlot(mapValues:HashMap<String,Double>,listDateStrings:List<String>) {
+    private fun getProgressivi(){
+        val formatter = SimpleDateFormat("dd-MM-yyyy")
+        val start=formatter.format(startDate)
+        val end=formatter.format(endDate)
+        val listDateStrings=calculateDates()
+        val progressiviMap=null
+        //val speseMap=dbHelperSpese.getSpeseForDateGroupByDay(start,end)
+        TODO("FARE I CALCOLI")
+        //if(progressiviMap.isEmpty())
+         //   return
+        //else
+            //drawPlot(progressiviMap,listDateStrings,"progressivi")
+    }
+    private fun creaSpinner() {
+        val spinnerTipoDati = binding.spinnerTipoDati
+        val options = arrayOf("Entrate", "Uscite", "Ricavi")
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, options)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerTipoDati.adapter = adapter
+        spinnerTipoDati.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            @SuppressLint("NewApi")
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                if (startDate==null || endDate==null)
+                    return
+                when (position) {
+                    0 -> getEntrate()
+                    1 -> getSpese()
+                    //2 -> getProgressivi()
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Fai qualcosa se nessuna opzione è selezionata (se necessario)
+            }
+        }
+    }
+    private fun drawPlot(mapValues:HashMap<String,Double>,listDateStrings:List<String>,tipo:String) {
         val barChart: BarChart = binding.barChart
         val mapFact=HashMap<String, Double>()
         val listKeys=mapValues.keys
@@ -186,7 +204,10 @@ class GraficiFragment : Fragment() {
         xAxis.valueFormatter = IndexAxisValueFormatter(labels) // dateStrings è la lista di date convertite in stringhe
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.granularity = 1f
-
+        if (tipo=="entrate")
+            barDataSet.color= Color.parseColor("#99ffbb")
+        if (tipo=="uscite")
+            barDataSet.color= Color.parseColor("#ff9999")
         barChart.setDrawGridBackground(false)
         barChart.setFitBars(false)
 

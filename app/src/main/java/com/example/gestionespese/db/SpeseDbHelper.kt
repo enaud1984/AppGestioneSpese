@@ -125,8 +125,8 @@ class SpeseDbHelper(context: Context) :SQLiteOpenHelper(context, DATABASE_NOME, 
     }
 
     @SuppressLint("Range")
-    fun getSpeseForDateGroupByDay(date1: String, date2:String):HashMap<Double,String>{
-        val speseListForDay = HashMap<Double,String>()
+    fun getSpeseForDateGroupByDay(date1: String, date2:String):HashMap<String,Double>{
+        val speseListForDay = HashMap<String,Double>()
         val db = this.readableDatabase
         val query = "SELECT sum(${SpeseEntry.COLONNA_USCITA}) as uscita,data FROM ${SpeseEntry.TABELLA_NOME} WHERE ${SpeseEntry.COLONNA_DATA} between ? and ? group by data"
         val cursor: Cursor = db.rawQuery(query,arrayOf(date1,date2))
@@ -134,7 +134,7 @@ class SpeseDbHelper(context: Context) :SQLiteOpenHelper(context, DATABASE_NOME, 
             do {
                 val spese=cursor.getDouble(cursor.getColumnIndex("uscita"))
                 val data=cursor.getString(cursor.getColumnIndex("data"))
-                speseListForDay.put(spese,data)
+                speseListForDay.put(data,spese)
             }while (cursor.moveToNext())
         }
         cursor.close()
