@@ -119,6 +119,24 @@ class PazientiDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NO
     }
 
     @SuppressLint("Range")
+    fun getIncassoForDateGroupByDay(date1: String, date2:String):HashMap<String,Double>{
+        val incassoListForDay = HashMap<String,Double>()
+        val db = this.readableDatabase
+        val query = "SELECT sum(${Contabilita.PazienteEntry.COLONNA_ENTRATA}) as entrate,data FROM ${Contabilita.PazienteEntry.TABELLA_NOME} WHERE ${Contabilita.PazienteEntry.COLONNA_DATA} between ? and ? group by data"
+        val cursor: Cursor = db.rawQuery(query,arrayOf(date1,date2))
+        if (cursor.moveToFirst()) {
+            do {
+                val entrate=cursor.getDouble(cursor.getColumnIndex("entrate"))
+                val data=cursor.getString(cursor.getColumnIndex("data"))
+                incassoListForDay.put(data,entrate)
+            }while (cursor.moveToNext())
+        }
+        cursor.close()
+        return incassoListForDay
+    }
+
+
+    @SuppressLint("Range")
     fun getAllPazientiDates():List<Date>{
         val pazientiDates = mutableListOf<Date>()
         val db = this.readableDatabase

@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
         android:id="@+id/navigation_home"
-        android:icon="@drawable/ic_home_black_24dp"
+        android:icon="@drawable/baseline_calendar_month_24"
         android:title="Home" />
     <item
         android:id="@+id/navigation_speseFisse"
-        android:icon="@drawable/ic_home_black_24dp"
+        android:icon="@drawable/baseline_align_horizontal_left_24"
         android:title="Spese fisse" />
     <item
         android:id="@+id/navigation_Progressivi"
-        android:icon="@drawable/ic_home_black_24dp"
+        android:icon="@drawable/baseline_euro_24"
         android:title="Progressivi" />
     <item
         android:id="@+id/navigation_Grafici"
-        android:icon="@drawable/ic_home_black_24dp"
+        android:icon="@drawable/baseline_auto_graph_24"
         android:title="Grafico" />
 </menu>

@@ -10,9 +10,9 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import com.example.gestionespese.db.Contabilita.DATABASE_NOME
 import com.example.gestionespese.db.Contabilita.DATABASE_VERSIONE
+import com.example.gestionespese.db.Contabilita.SpeseEntry
 import java.text.SimpleDateFormat
 import java.util.Date
-import com.example.gestionespese.db.Contabilita.SpeseEntry
 
 class SpeseDbHelper(context: Context) :SQLiteOpenHelper(context, DATABASE_NOME, null, DATABASE_VERSIONE) {
 
@@ -105,6 +105,40 @@ class SpeseDbHelper(context: Context) :SQLiteOpenHelper(context, DATABASE_NOME, 
         cursor.close()
         //db.close()
         return speseList
+    }
+
+
+    @SuppressLint("Range")
+    fun getSpeseForDateRange(date1: String, date2:String):Double{
+        var ret=0.0;
+        val db = this.readableDatabase
+        val query = "SELECT sum(${SpeseEntry.COLONNA_USCITA}) as uscita FROM ${SpeseEntry.TABELLA_NOME} WHERE ${SpeseEntry.COLONNA_DATA} between ? and ?"
+        val cursor: Cursor = db.rawQuery(query,arrayOf(date1,date2))
+        if (cursor.moveToFirst()) {
+            do {
+                val spese=cursor.getDouble(cursor.getColumnIndex("uscita"))
+                ret=spese
+            }while (cursor.moveToNext())
+        }
+        cursor.close()
+        return ret
+    }
+
+    @SuppressLint("Range")
+    fun getSpeseForDateGroupByDay(date1: String, date2:String):HashMap<Double,String>{
+        val speseListForDay = HashMap<Double,String>()
+        val db = this.readableDatabase
+        val query = "SELECT sum(${SpeseEntry.COLONNA_USCITA}) as uscita,data FROM ${SpeseEntry.TABELLA_NOME} WHERE ${SpeseEntry.COLONNA_DATA} between ? and ? group by data"
+        val cursor: Cursor = db.rawQuery(query,arrayOf(date1,date2))
+        if (cursor.moveToFirst()) {
+            do {
+                val spese=cursor.getDouble(cursor.getColumnIndex("uscita"))
+                val data=cursor.getString(cursor.getColumnIndex("data"))
+                speseListForDay.put(spese,data)
+            }while (cursor.moveToNext())
+        }
+        cursor.close()
+        return speseListForDay
     }
 
     data class Spesa(var id: Long, var nome_spesa: String, var uscita: Double,var data: Date)
